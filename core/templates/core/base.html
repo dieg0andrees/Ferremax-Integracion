@@ -20,6 +20,7 @@
 
     <link rel="stylesheet" href="{% static 'core/css/style.css' %}">
     {% block extra_head %}{% endblock %}
+
   </head>
 <body>
 
@@ -44,19 +45,38 @@
 
             <div class="col-6 col-md-4 order-3 order-md-3 text-right">
                 <div class="site-top-icons">
-                <ul>
-                    <li><a href="{% url 'login' %}"><span class="icon icon-person"></span></a></li>
-                    <li><a href="#"><span class="icon icon-heart-o"></span></a></li>
-                    <li>
-                    <a href="{% url 'cart' %}" class="site-cart">
+                  <ul class="navbar-nav d-flex flex-row align-items-center justify-content-end gap-2">
+              
+                    {% if request.session.usuario %}
+                    <li class="nav-item d-flex align-items-center gap-3">
+                        <h5 class="mb-0 fs-6">Bienvenido(a), {{ usuario.nombre }}</h5>
+                        <a class="nav-link" href="{% url 'logout' %}">Sign out</a>
+                    </li>
+                    {% else %}
+                      <li class="nav-item">
+                        <a class="nav-link" href="{% url 'login' %}">Sign in</a>
+                      </li>
+                      <li class="nav-item">
+                        <a class="nav-link" href="#">Sign up</a>
+                      </li>
+                    {% endif %}
+              
+                    <li class="nav-item">
+                      <a class="nav-link" href="#"><span class="icon icon-heart-o"></span></a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link site-cart" href="{% url 'cart' %}">
                         <span class="icon icon-shopping_cart"></span>
                         <span class="count">2</span>
-                    </a>
-                    </li> 
-                    <li class="d-inline-block d-md-none ml-md-0"><a href="#" class="site-menu-toggle js-menu-toggle"><span class="icon-menu"></span></a></li>
-                </ul>
-                </div> 
-            </div>
+                      </a>
+                    </li>
+                    <li class="nav-item d-inline-block d-md-none ml-md-0">
+                      <a class="nav-link site-menu-toggle js-menu-toggle" href="#"><span class="icon-menu"></span></a>
+                    </li>
+              
+                  </ul>
+                </div>
+              </div>
 
             </div>
         </div>
