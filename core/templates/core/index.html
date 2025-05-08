@@ -5,15 +5,15 @@
 {% if usuario %}
   
 {% endif %}
-    <div class="site-blocks-cover" style="background-image: url({% static 'core/images/hero_1.jpg' %});" data-aos="fade">
+    <div class="site-blocks-cover" style="background-image: url({% static 'core/images/Fondo_Index.png' %})" data-aos="fade">
       <div class="container">
         <div class="row align-items-start align-items-md-center justify-content-end">
           <div class="col-md-5 text-center text-md-left pt-5 pt-md-0">
-            <h1 class="mb-2">Finding Your Perfect Shoes</h1>
+            <h1 class="mb-2">Encuentra tu herramienta ideal</h1>
             <div class="intro-text text-center text-md-left">
-              <p class="mb-4">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus at iaculis quam. Integer accumsan tincidunt fringilla. </p>
+              <p class="mb-4">Descubre las distintas categorías de herramientas y productos diseñados para facilitar tus proyectos, ya sean de construcción, reparación o mejoras en el hogar. Encuentra desde herramientas manuales hasta equipos eléctricos, todo en un solo lugar y con la calidad que necesitas para trabajar con confianza.</p>
               <p>
-                <a href="#" class="btn btn-sm btn-primary">Shop Now</a>
+                <a href="{% url 'shop' %}" class="btn btn-sm btn-primary">Compra Ahora!</a>
               </p>
             </div>
           </div>
@@ -26,29 +26,30 @@
         <div class="row">
           <div class="col-md-6 col-lg-4 d-lg-flex mb-4 mb-lg-0 pl-4" data-aos="fade-up" data-aos-delay="">
             <div class="icon mr-4 align-self-start">
-              <span class="icon-truck"></span>
+              <span class="fa fa-credit-card"></span>
             </div>
             <div class="text">
-              <h2 class="text-uppercase">Free Shipping</h2>
-              <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus at iaculis quam. Integer accumsan tincidunt fringilla.</p>
+              <h2 class="text-uppercase">Compra segura</h2>
+              <p style="color: black">Tus datos y pagos están protegidos con tecnología de seguridad avanzada.</p>
             </div>
           </div>
           <div class="col-md-6 col-lg-4 d-lg-flex mb-4 mb-lg-0 pl-4" data-aos="fade-up" data-aos-delay="100">
             <div class="icon mr-4 align-self-start">
-              <span class="icon-refresh2"></span>
+              <span class="fa fa-wrench"></span>
             </div>
             <div class="text">
-              <h2 class="text-uppercase">Free Returns</h2>
-              <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus at iaculis quam. Integer accumsan tincidunt fringilla.</p>
+              <h2 class="text-uppercase">Calidad Profesional</h2>
+              <p style="color: black">Trabajamos con marcas reconocidas y productos seleccionados por expertos para garantizar un rendimiento 
+                superior en cada herramienta. Ideal para profesionales y aficionados exigentes.</p>
             </div>
           </div>
           <div class="col-md-6 col-lg-4 d-lg-flex mb-4 mb-lg-0 pl-4" data-aos="fade-up" data-aos-delay="200">
             <div class="icon mr-4 align-self-start">
-              <span class="icon-help"></span>
+              <span class="fa fa-shopping-bag"></span>
             </div>
             <div class="text">
-              <h2 class="text-uppercase">Customer Support</h2>
-              <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus at iaculis quam. Integer accumsan tincidunt fringilla.</p>
+              <h2 class="text-uppercase">Retiro en Tienda</h2>
+              <p style="color:black">Compra en línea y retira tus productos en la tienda más cercana. Ahorra tiempo y evita costos de envío, con la comodidad de recoger cuando más te convenga.</p>
             </div>
           </div>
         </div>
