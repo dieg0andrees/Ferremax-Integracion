@@ -29,6 +29,9 @@ def shop(request):
 def thankyou(request):
     return render(request, 'core/thankyou.html')
 
+def register(request):
+    return render(request,'core/registration/register.html')
+
 def base(request):
     usuario = request.session.get('usuario')
     return render(request, 'core/base.html', {'usuario': usuario})

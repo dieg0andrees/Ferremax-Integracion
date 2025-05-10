@@ -35,7 +35,7 @@
             <div class="col-6 col-md-4 order-2 order-md-1 site-search-icon text-left">
                 <form action="" class="site-block-top-search">
                 <span class="icon icon-search2"></span>
-                <input type="text" class="form-control border-0" placeholder="Search">
+                <input type="text" class="form-control border-0" placeholder="Buscar">
                 </form>
             </div>
 
@@ -56,20 +56,13 @@
                     </li>
                     {% else %}
                       <li class="nav-item">
-                        <a class="nav-link" href="{% url 'login' %}">Sign in</a>
-                      </li>
-                      <li class="nav-item">
-                        <a class="nav-link" href="#">Sign up</a>
+                        <a style="color: black;" class="icon icon-user" href="{% url 'login' %}"></a>
                       </li>
                     {% endif %}
-              
                     <li class="nav-item">
-                      <a class="nav-link" href="#"><span class="icon icon-heart-o"></span></a>
-                    </li>
-                    <li class="nav-item">
-                      <a class="nav-link site-cart" href="{% url 'cart' %}">
+                      <a style="color: black;" class="nav-link site-cart" href="{% url 'cart' %}">
                         <span class="icon icon-shopping_cart"></span>
-                        <span class="count">2</span>
+                        <span class="count"></span>
                       </a>
                     </li>
                     <li class="nav-item d-inline-block d-md-none ml-md-0">
@@ -112,13 +105,13 @@
             <div class="col-lg-6 mb-5 mb-lg-0">
             <div class="row">
                 <div class="col-md-12">
-                <h3 class="footer-heading mb-4">Navigations</h3>
+                <h3 class="footer-heading mb-4">Navegacion</h3>
                 </div>
                 <div class="col-md-6 col-lg-4">
                 <ul class="list-unstyled">
-                    <li><a href="#">Sell online</a></li>
-                    <li><a href="#">Features</a></li>
-                    <li><a href="#">Shopping cart</a></li>
+                    <li><a href="{% url 'index' %}">Inicio</a></li>
+                    <li><a href="{% url 'about' %}">Sobre Nosotros</a></li>
+                    <li><a href="{% url 'shop'  %}">Ver Productos</a></li>
                     <li><a href="#">Store builder</a></li>
                 </ul>
                 </div>
@@ -131,31 +124,31 @@
                 </div>
                 <div class="col-md-6 col-lg-4">
                 <ul class="list-unstyled">
-                    <li><a href="#">Point of sale</a></li>
-                    <li><a href="#">Hardware</a></li>
-                    <li><a href="#">Software</a></li>
+                    <li><a href="#">Términos y condiciones</a></li>
+                    <li><a href="#">Política de privacidad</a></li>
+                    <li><a href="#">Derechos reservados</a></li>
                 </ul>
                 </div>
             </div>
             </div>
             <div class="col-md-6 col-lg-3 mb-4 mb-lg-0">
-            <h3 class="footer-heading mb-4">Promo</h3>
-            <a href="#" class="block-6">
-                <img src="{% static 'core/images/hero_1.jpg' %}" alt="Image placeholder" class="img-fluid rounded mb-4">
+            <h3 class="footer-heading mb-4">Nuestra Historia</h3>
+            <a class="block-6">
+                <p>Desde la decada de los 80, ayudando a miles de personas a encontrar lo que buscan y poder cumplir sus sueños.</p>
                 <h3 class="font-weight-light  mb-0">Finding Your Perfect Shoes</h3>
                 <p>Promo from  nuary 15 &mdash; 25, 2019</p>
             </a>
             </div>
             <div class="col-md-6 col-lg-3">
             <div class="block-5 mb-5">
-                <h3 class="footer-heading mb-4">Contact Info</h3>
+                <h3 class="footer-heading mb-4">Contacto de Empresa</h3>
                 <ul class="list-unstyled">
-                <li class="address">203 Fake St. Mountain View, San Francisco, California, USA</li>
+                <li class="address"><a href="https://maps.app.goo.gl/K8SBjU1B2cxirRAo8">Av. Concha y Toro 1567, 8150215 Puente Alto, Región Metropolitana</a>
                 <li class="phone"><a href="tel://23923929210">+2 392 3929 210</a></li>
                 <li class="email">emailaddress@domain.com</li>
                 </ul>
             </div>
-
+            <!-- 
             <div class="block-7">
                 <form action="#" method="post">
                 <label for="email_subscribe" class="footer-heading">Subscribe</label>
@@ -164,7 +157,7 @@
                     <input type="submit" class="btn btn-sm btn-primary" value="Send">
                 </div>
                 </form>
-            </div>
+            </div> -->
             </div>
         </div>
         <div class="row pt-5 mt-5 text-center">
@@ -174,8 +167,7 @@
             Copyright &copy;<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>document.write(new Date().getFullYear());</script> All rights reserved | This template is made with <i class="icon-heart" aria-hidden="true"></i> by <a href="https://colorlib.com" target="_blank" class="text-primary">Colorlib</a>
             <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
             </p>
-            </div>
-            
+            </div>            
         </div>
         </div>
     </footer>
