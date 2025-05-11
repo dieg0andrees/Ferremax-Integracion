@@ -1,56 +1,95 @@
 {
-    "generos": [
-        { "id": 1, "descripcion": "Masculino" },
-        { "id": 2, "descripcion": "Femenino" },
-        { "id": 3, "descripcion": "Otro" },
-        { "id": 4, "descripcion": "Prefiere no decirlo" }
-    ],
-    "roles": [
-        { "id": 1, "descripcion": "Cliente" },
-        { "id": 2, "descripcion": "Vendedor" },
-        { "id": 3, "descripcion": "Bodegero" },
-        { "id": 4, "descripcion": "Contador" }
-    ],
-    "usuarios": [
-        {
-            "rut_user": 112223334,
-            "nombre": "Juan",
-            "p_apellido": "Perez",
-            "s_apellido": "Gomez",
-            "correo_user": "jperez@gmail.com",
-            "contrasena_user": "jperez1234",
-            "id_genero": "1",
-            "id_rol": "1"
-        },
-        {
-            "rut_user": 112223335,
-            "nombre": "Ana",
-            "p_apellido": "Lopez",
-            "s_apellido": "Diaz",
-            "correo_user": "alopez@gmail.com",
-            "contrasena_user": "alopez123",
-            "id_genero": "2",
-            "id_rol": "2"
-        },
-        {
-            "rut_user": 112223336,
-            "nombre": "Carlos",
-            "p_apellido": "Ramos",
-            "s_apellido": "Mora",
-            "correo_user": "cramos@gmail.com",
-            "contrasena_user": "cramos123",
-            "id_genero": "3",
-            "id_rol": "3"
-        },
-        {
-            "rut_user": 112223337,
-            "nombre": "Lucia",
-            "p_apellido": "Soto",
-            "s_apellido": "Nunez",
-            "correo_user": "lsoto@gmail.com",
-            "contrasena_user": "lsoto123",
-            "id_genero": "4",
-            "id_rol": "4"
-        }
-    ]
+  "generos": [
+    {
+      "id": "1",
+      "descripcion": "Masculino"
+    },
+    {
+      "id": "2",
+      "descripcion": "Femenino"
+    },
+    {
+      "id": "3",
+      "descripcion": "Otro"
+    },
+    {
+      "id": "4",
+      "descripcion": "Prefiere no decirlo"
+    }
+  ],
+  "roles": [
+    {
+      "id": "1",
+      "descripcion": "Cliente"
+    },
+    {
+      "id": "2",
+      "descripcion": "Vendedor"
+    },
+    {
+      "id": "3",
+      "descripcion": "Bodegero"
+    },
+    {
+      "id": "4",
+      "descripcion": "Contador"
+    }
+  ],
+  "usuarios": [
+    {
+      "rut_user": 112223334,
+      "nombre": "Juan",
+      "p_apellido": "Perez",
+      "s_apellido": "Gomez",
+      "correo_user": "jperez@gmail.com",
+      "contrasena_user": "jperez1234",
+      "id_genero": "1",
+      "id_rol": "1",
+      "id": "a2ed"
+    },
+    {
+      "rut_user": 112223335,
+      "nombre": "Ana",
+      "p_apellido": "Lopez",
+      "s_apellido": "Diaz",
+      "correo_user": "alopez@gmail.com",
+      "contrasena_user": "alopez123",
+      "id_genero": "2",
+      "id_rol": "2",
+      "id": "0767"
+    },
+    {
+      "rut_user": 112223336,
+      "nombre": "Carlos",
+      "p_apellido": "Ramos",
+      "s_apellido": "Mora",
+      "correo_user": "cramos@gmail.com",
+      "contrasena_user": "cramos123",
+      "id_genero": "3",
+      "id_rol": "3",
+      "id": "666e"
+    },
+    {
+      "rut_user": 112223337,
+      "nombre": "Lucia",
+      "p_apellido": "Soto",
+      "s_apellido": "Nunez",
+      "correo_user": "lsoto@gmail.com",
+      "contrasena_user": "lsoto123",
+      "id_genero": "4",
+      "id_rol": "4",
+      "id": "6c2a"
+    },
+    {
+      "id": "127f",
+      "rut_user": "112223334",
+      "nombre": "Pablo",
+      "p_apellido": "Gomez",
+      "s_apellido": "Hidalgo",
+      "correo_user": "pgomez@gmail.com",
+      "contrasena_user": "pgomez1234",
+      "id_genero": "1",
+      "id_rol": "1"
+    }
+  ]
 }

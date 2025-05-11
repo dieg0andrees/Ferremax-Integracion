@@ -29,7 +29,7 @@ def shop(request):
 def thankyou(request):
     return render(request, 'core/thankyou.html')
 
-def register(request):
+#def register(request):
     return render(request,'core/registration/register.html')
 
 def base(request):
@@ -71,7 +71,33 @@ def login(request):
 
     return render(request, 'core/registration/login.html')
 
+def register(request):
+    if request.method == 'POST':
+        data = {
+            "rut_user": request.POST.get("rut_user"),
+            "nombre": request.POST.get("nombre"),
+            "p_apellido": request.POST.get("p_apellido"),
+            "s_apellido": request.POST.get("s_apellido"),
+            "correo_user": request.POST.get("correo_user"),
+            "contrasena_user": request.POST.get("contrasena_user"),
+            "id_genero": request.POST.get("id_genero"),
+            "id_rol": request.POST.get("id_rol"),  # Por defecto será "1" (cliente)
+        }
+
+        try:
+            response = requests.post("http://localhost:3001/usuarios", json=data)
+            if response.status_code == 201:
+                messages.success(request, "Registro exitoso. Ahora puedes iniciar sesión.")
+                return redirect("login")
+            else:
+                messages.error(request, "Error al registrar. Verifica los datos.")
+        except requests.exceptions.RequestException:
+            messages.error(request, "No se pudo conectar con el servidor.")
+    
+    return render(request, "core/registration/register.html")
+
 def logout_view(request):
     request.session.flush()
     messages.success(request, "Sesión cerrada correctamente.")
     return redirect('index')
+
