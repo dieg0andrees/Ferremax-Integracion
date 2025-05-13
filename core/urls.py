@@ -14,5 +14,6 @@ urlpatterns = [
     path('thankyou/',thankyou,name="thankyou"),
     path('login/',login, name="login"),
     path('logout/', logout_view, name='logout'),
-    path('register/', register, name='register')
+    path('register/', register, name='register'),
+    path('home_admin/',home_admin, name="home_admin"),
 ]

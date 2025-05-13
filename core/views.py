@@ -2,6 +2,7 @@ import requests
 from django.shortcuts import render,redirect
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib import messages
+from django.core.paginator import Paginator
 
 # Create your views here.
 def index(request):
@@ -47,13 +48,13 @@ def login(request):
 
         try:
             # 1. Consulta todos los usuarios desde la API de json-server
-            response = requests.get('http://localhost:3001/usuarios')
+            response = requests.get('http://localhost:8080/usuarios')
             if response.status_code == 200:
                 usuarios = response.json()
 
                 # 2. Buscar el usuario que coincida con correo y contraseña
                 usuario = next(
-                    (u for u in usuarios if u['correo_user'] == correo and u['contrasena_user'] == contrasena),
+                    (u for u in usuarios if u['correo_usuario'] == correo and u['contrasena_usuario'] == contrasena),
                     None
                 )
 
@@ -61,7 +62,7 @@ def login(request):
                     # 3. Guardar usuario en sesión
                     request.session['usuario'] = usuario
                     messages.success(request, f"Bienvenido {usuario['nombre']}")
-                    return redirect('index')  # Cambia a la URL real de tu página principal
+                    return redirect('index')
                 else:
                     messages.error(request, "Correo o contraseña incorrectos")
             else:
@@ -75,22 +76,22 @@ def register(request):
     if request.method == 'POST':
         data = {
             "rut_user": request.POST.get("rut_user"),
-            "nombre": request.POST.get("nombre"),
+            "nombre_user": request.POST.get("nombre"),
             "p_apellido": request.POST.get("p_apellido"),
             "s_apellido": request.POST.get("s_apellido"),
             "correo_user": request.POST.get("correo_user"),
             "contrasena_user": request.POST.get("contrasena_user"),
-            "id_genero": request.POST.get("id_genero"),
-            "id_rol": request.POST.get("id_rol"),  # Por defecto será "1" (cliente)
+            "id_genero": int(request.POST.get("id_genero")),
+            "id_rol": int(request.POST.get("id_rol"))
         }
-
+        
         try:
-            response = requests.post("http://localhost:3001/usuarios", json=data)
-            if response.status_code == 201:
+            response = requests.post("http://localhost:8080/usuarios", json=data)
+            if response.status_code == 200:
                 messages.success(request, "Registro exitoso. Ahora puedes iniciar sesión.")
                 return redirect("login")
             else:
-                messages.error(request, "Error al registrar. Verifica los datos.")
+                messages.error(request, "Error al registrar. Verifica los datos."+str(data))
         except requests.exceptions.RequestException:
             messages.error(request, "No se pudo conectar con el servidor.")
     
@@ -101,3 +102,17 @@ def logout_view(request):
     messages.success(request, "Sesión cerrada correctamente.")
     return redirect('index')
 
+def home_admin(request):
+    response = requests.get('http://localhost:8080/usuarios')
+    colaboradores = response.json()
+
+    paginator = Paginator(colaboradores, 10)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    aux = {
+        'lista' : colaboradores,
+        'page_obj' : page_obj
+    }
+
+    return render(request, "core/admin/home.html", aux)
