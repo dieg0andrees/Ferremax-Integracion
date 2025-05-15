@@ -48,7 +48,7 @@ def login(request):
 
         try:
             # 1. Consulta todos los usuarios desde la API de json-server
-            response = requests.get('http://localhost:8080/usuarios')
+            response = requests.get('http://localhost:8001/usuarios')
             if response.status_code == 200:
                 usuarios = response.json()
 
@@ -86,7 +86,7 @@ def register(request):
         }
         
         try:
-            response = requests.post("http://localhost:8080/usuarios", json=data)
+            response = requests.post("http://localhost:8001/usuarios", json=data)
             if response.status_code == 200:
                 messages.success(request, "Registro exitoso. Ahora puedes iniciar sesión.")
                 return redirect("login")
@@ -103,7 +103,7 @@ def logout_view(request):
     return redirect('index')
 
 def home_admin(request):
-    response = requests.get('http://localhost:8080/usuarios')
+    response = requests.get('http://localhost:8001/usuarios')
     colaboradores = response.json()
 
     paginator = Paginator(colaboradores, 10)
