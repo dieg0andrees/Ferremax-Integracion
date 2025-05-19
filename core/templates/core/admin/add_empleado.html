@@ -1,0 +1,116 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Agregar Empleado{% endblock %}
+
+{% block content %}
+<style>
+  .form-container {
+    background-color: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    max-width: 600px;
+    margin: 40px auto;
+  }
+
+  .form-container h2 {
+    margin-bottom: 1.5rem;
+    font-weight: bold;
+    text-align: center;
+    font-family: 'Ubuntu', sans-serif;
+    color: black;
+  }
+
+  label {
+    color: black;
+    font-family: 'Ubuntu', sans-serif;
+    font-weight: 500;
+  }
+
+  .btn-custom {
+    background-color: #0d6efd;
+    color: white;
+    transition: 0.3s;
+  }
+
+  .btn-custom:hover {
+    background-color: #0b5ed7;
+  }
+
+  .volver-link {
+    display: block;
+    margin-top: 1rem;
+    text-align: center;
+  }
+</style>
+
+<div class="form-container">
+  <h2>Agregar Empleado</h2>
+
+  {% if messages %}
+    <div class="mb-3">
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+          {{ message }}
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <form method="post">
+    {% csrf_token %}
+    <div class="mb-3">
+      <label for="rut_user">RUT</label>
+      <input type="text" name="rut_user" class="form-control" required />
+    </div>
+
+    <div class="mb-3">
+      <label for="nombre">Nombre</label>
+      <input type="text" name="nombre" class="form-control" required />
+    </div>
+
+    <div class="mb-3">
+      <label for="p_apellido">Primer Apellido</label>
+      <input type="text" name="p_apellido" class="form-control" required />
+    </div>
+
+    <div class="mb-3">
+      <label for="s_apellido">Segundo Apellido</label>
+      <input type="text" name="s_apellido" class="form-control" required />
+    </div>
+
+    <div class="mb-3">
+      <label for="correo_user">Correo</label>
+      <input type="email" name="correo_user" class="form-control" required />
+    </div>
+
+    <div class="mb-3">
+      <label for="contrasena_user">Contraseña</label>
+      <input type="password" name="contrasena_user" class="form-control" required />
+    </div>
+
+    <div class="mb-3">
+      <label for="id_genero">Género</label>
+      <select name="id_genero" class="form-control" required>
+        <option value="1">Masculino</option>
+        <option value="2">Femenino</option>
+        <option value="3">Otro</option>
+        <option value="4">Prefiere no decirlo</option>
+      </select>
+    </div>
+
+    <div class="mb-3">
+      <label for="id_rol">Rol</label>
+      <select name="id_rol" class="form-control" required>
+        <option value="2">Vendedor</option>
+        <option value="3">Bodeguero</option>
+        <option value="4">Contador</option>
+      </select>
+    </div>
+
+    <button type="submit" class="btn btn-custom w-100 mt-3">Guardar</button>
+    <a class="volver-link" href="{% url 'home_admin' %}">← Volver al panel</a>
+  </form>
+</div>
+{% endblock %}

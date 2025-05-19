@@ -88,6 +88,11 @@
             <li>
                 <a href="{% url 'shop' %}">Compra</a>
             </li>
+            {% if request.session.usuario and request.session.usuario.rol == "Admin" %}
+            <li>
+                <a class="text-danger" href="{% url 'home_admin' %}">Gestión de Empleados</a>
+            </li>
+            {% endif %}
         </div>
         </nav>
     </header>

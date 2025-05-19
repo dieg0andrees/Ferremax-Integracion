@@ -4,7 +4,7 @@
 {% block content %}
 
 <div class="container mt-3">
-  <h2>Colaboradores</h2>
+  <h2 class="text-danger">Gestión de Empleados</h2>
   <p>En la siguiente tabla podrás ver todos los empleados contratados:</p>            
   <table class="table">
       <thead>
@@ -24,16 +24,16 @@
                 <td>{{ aux.primer_apellido }}</td>
                 <td>{{ aux.rol }}</td>
                 <td>
-                  <a class="btn btn-info" href="#">Actualizar</a>
+                  <a class="btn btn-info" href="{% url 'update_empleado' aux.rut %}">Actualizar</a>
                 </td>
                 <td>
-                  <a class="btn btn-danger" href="#">Eliminar</a>
+                  <a class="btn btn-danger" href="{% url 'delete_empleado' aux.rut %}">Eliminar</a>
                 </td>
             </tr>
         {% endfor %}
       </tbody>
   </table>
-  <a href="#" class="nav-item nav-link active">Agregar Mecanico</a>
+  <a href="{% url 'add_empleado' %}" class="nav-item nav-link active">Agregar Mecanico</a>
 
   <nav aria-label="Page navigation example">
       <ul class="pagination justify-content-center">

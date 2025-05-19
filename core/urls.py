@@ -18,6 +18,10 @@ urlpatterns = [
     path('logout/', logout_view, name='logout'),
     path('register/', register, name='register'),
     path('home_admin/',home_admin, name="home_admin"),
+    path('add_empleado/',add_empleado, name="add_empleado"),
+    path('update_empleado/<str:rut>/', update_empleado, name='update_empleado'),
+    path('delete_empleado/<str:rut>/', delete_empleado, name='delete_empleado'),
+    
     #EMAIL
     path('password_reset/', auth_views.PasswordResetView.as_view(), name='password_reset'),
     path('password_reset/done/',auth_views.PasswordResetDoneView.as_view(), name='password_reset_done'),
