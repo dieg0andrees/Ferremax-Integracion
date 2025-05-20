@@ -8,12 +8,13 @@ from .decorators import solo_admin
 # Create your views here.
 def index(request):
     usuario = request.session.get('usuario')
+    print(request.session.get("carrito"))
     return render(request, 'core/index.html', {'usuario': usuario})
 
 def about(request):
     return render(request, 'core/about.html')
 
-def cart(request):
+#def cart(request):
     return render(request, 'core/cart.html')
 
 def checkout(request):
@@ -25,7 +26,7 @@ def contact(request):
 def shop_single(request):
     return render(request, 'core/shop-single.html')
 
-def shop(request):
+#def shop(request):
     return render(request, 'core/shop.html')
 
 def thankyou(request):
@@ -195,3 +196,91 @@ def delete_empleado(request, rut):
         messages.error(request, "No se pudo conectar con el servidor de la API.")
 
     return redirect("home_admin")
+
+def productos_view(request):
+    try:
+        response = requests.get("http://localhost:8001/productos")
+        if response.status_code == 200:
+            productos = response.json()
+        else:
+            productos = []
+            messages.error(request, "No se pudieron obtener los productos.")
+    except requests.exceptions.RequestException:
+        productos = []
+        messages.error(request, "Error de conexión con la API de productos.")
+    paginator = Paginator(productos, 10)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    aux = {
+        'productos' : productos,
+        'page_obj' : page_obj
+    }
+    return render(request, "core/shop.html", aux)
+
+def agregar_al_carrito(request):
+    if request.method == 'POST':
+        id_producto = str(request.POST.get('id_producto'))
+        print("ID producto recibido:", id_producto)
+
+        carrito = request.session.get('carrito', {})
+        carrito[id_producto] = carrito.get(id_producto, 0) + 1
+        request.session['carrito'] = carrito
+
+        print("Carrito actual:", carrito)
+
+        messages.success(request, "Producto agregado al carrito.")
+    return redirect('shop')
+
+def cart(request):
+    carrito = request.session.get("carrito", {})
+    productos_en_carrito = []
+    total_general = 0
+
+    try:
+        response = requests.get("http://localhost:8001/productos")
+        if response.status_code == 200:
+            todos_los_productos = response.json()
+            # Indexar por id_producto (¡ojo que viene como string!)
+            productos_por_id = {p["id_producto"]: p for p in todos_los_productos}
+
+            for id_str, cantidad in carrito.items():
+                producto = productos_por_id.get(id_str)
+                if producto:
+                    precio = int(producto["precio_producto"])  # 👈 asegúrate que sea int
+                    subtotal = precio * cantidad
+                    total_general += subtotal
+                    productos_en_carrito.append({
+                        "id": id_str,
+                        "nombre": producto["nombre_producto"],
+                        "imagen": producto["url_imagen"],
+                        "precio": precio,
+                        "cantidad": cantidad,
+                        "subtotal": subtotal,
+                    })
+    except Exception as e:
+        print("ERROR en carrito:", e)
+        messages.error(request, "Error al cargar productos desde la API.")
+
+    context = {
+        "carrito_productos": productos_en_carrito,
+        "total": total_general,
+    }
+    return render(request, "core/cart.html", context)
+
+def actualizar_carrito(request):
+    if request.method == 'POST':
+        id_producto = request.POST.get("id_producto")
+        accion = request.POST.get("accion")
+        carrito = request.session.get("carrito", {})
+
+        if id_producto in carrito:
+            if accion == "sumar":
+                carrito[id_producto] += 1
+            elif accion == "restar":
+                carrito[id_producto] = max(1, carrito[id_producto] - 1)
+            elif accion == "eliminar":
+                carrito.pop(id_producto)
+
+        request.session["carrito"] = carrito
+
+    return redirect("cart")

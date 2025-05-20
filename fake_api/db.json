@@ -91,5 +91,37 @@
       "id_genero": "1",
       "id_rol": "1"
     }
+  ],
+  "marca": [
+    {
+      "id_marca": "1",
+      "descripcion": "Makita"
+    }
+  ],
+  "tipo_producto": [
+    {
+      "id_tipo_producto": "1",
+      "descripcion": "Herramienta de percusión"
+    }
+  ],
+  "productos": [
+    {
+      "id_producto": "1",
+      "nombre_producto": "Martillo de Madera",
+      "precio_producto": "12990",
+      "stock_producto": "22",
+      "id_marca": "1",
+      "id_tipo_producto": "1",
+      "url_imagen":"imagenes_productos/martillo.png"
+    },
+    {
+      "id_producto": "2",
+      "nombre_producto": "Taladro Bosh 3001",
+      "precio_producto": "139999",
+      "stock_producto": "12",
+      "id_marca": "1",
+      "id_tipo_producto": "1",
+      "url_imagen":"imagenes_productos/taladro_bosh.png"
+    }
   ]
 }

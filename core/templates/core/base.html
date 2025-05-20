@@ -59,12 +59,14 @@
                         <a style="color: black;" class="icon icon-user" href="{% url 'login' %}"></a>
                       </li>
                     {% endif %}
-                    <li class="nav-item">
-                      <a style="color: black;" class="nav-link site-cart" href="{% url 'cart' %}">
+                    {% with request.session.carrito|length as carrito_count %}
+                    <li>
+                        <a href="{% url 'cart' %}" class="site-cart">
                         <span class="icon icon-shopping_cart"></span>
-                        <span class="count"></span>
-                      </a>
+                        <span class="count">{{ carrito_count }}</span>
+                        </a>
                     </li>
+                    {% endwith %}
                     <li class="nav-item d-inline-block d-md-none ml-md-0">
                       <a class="nav-link site-menu-toggle js-menu-toggle" href="#"><span class="icon-menu"></span></a>
                     </li>

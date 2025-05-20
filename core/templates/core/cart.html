@@ -10,62 +10,57 @@
             <table class="table table-bordered">
               <thead>
                 <tr>
-                  <th class="product-thumbnail">Image</th>
-                  <th class="product-name">Product</th>
-                  <th class="product-price">Price</th>
-                  <th class="product-quantity">Quantity</th>
+                  <th class="product-thumbnail">Imagen</th>
+                  <th class="product-name">Producto</th>
+                  <th class="product-price">Precio</th>
+                  <th class="product-quantity">Cantidad</th>
                   <th class="product-total">Total</th>
                   <th class="product-remove">Remove</th>
                 </tr>
               </thead>
               <tbody>
-                <tr>
-                  <td class="product-thumbnail">
-                    <img src="{% static 'core/images/cloth_1.jpg' %}" alt="Image" class="img-fluid">
-                  </td>
-                  <td class="product-name">
-                    <h2 class="h5 text-black">Top Up T-Shirt</h2>
-                  </td>
-                  <td>$49.00</td>
-                  <td>
-                    <div class="input-group mb-3" style="max-width: 120px;">
-                      <div class="input-group-prepend">
-                        <button class="btn btn-outline-primary js-btn-minus" type="button">&minus;</button>
+                {% for item in carrito_productos %}
+                  <tr>
+                    <td class="product-thumbnail">
+                      {% get_media_prefix as MEDIA_URL %}
+                      <img src="{{ MEDIA_URL }}{{ item.imagen }}" alt="{{ item.nombre }}" class="img-fluid">
+                    </td>
+                    <td class="product-name">
+                      <h2 class="h5 text-black">{{ item.nombre }}</h2>
+                    </td>
+                    <td>${{ item.precio }}</td>
+                    <td>
+                      <div class="input-group mb-3" style="max-width: 120px;">
+                        <div class="input-group-prepend">
+                          <form method="post" action="{% url 'actualizar_carrito' %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="id_producto" value="{{ item.id }}">
+                            <input type="hidden" name="accion" value="restar">
+                            <button class="btn btn-outline-primary js-btn-minus" type="submit">&minus;</button>
+                          </form>
+                        </div>
+                        <input type="text" class="form-control text-center" value="{{ item.cantidad }}" readonly>
+                        <div class="input-group-append">
+                          <form method="post" action="{% url 'actualizar_carrito' %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="id_producto" value="{{ item.id }}">
+                            <input type="hidden" name="accion" value="sumar">
+                            <button class="btn btn-outline-primary js-btn-plus" type="submit">&plus;</button>
+                          </form>
+                        </div>
                       </div>
-                      <input type="text" class="form-control text-center" value="1" placeholder="" aria-label="Example text with button addon" aria-describedby="button-addon1">
-                      <div class="input-group-append">
-                        <button class="btn btn-outline-primary js-btn-plus" type="button">&plus;</button>
-                      </div>
-                    </div>
-
-                  </td>
-                  <td>$49.00</td>
-                  <td><a href="#" class="btn btn-primary btn-sm">X</a></td>
-                </tr>
-
-                <tr>
-                  <td class="product-thumbnail">
-                    <img src="{% static 'core/images/cloth_2.jpg' %}" alt="Image" class="img-fluid">
-                  </td>
-                  <td class="product-name">
-                    <h2 class="h5 text-black">Polo Shirt</h2>
-                  </td>
-                  <td>$49.00</td>
-                  <td>
-                    <div class="input-group mb-3" style="max-width: 120px;">
-                      <div class="input-group-prepend">
-                        <button class="btn btn-outline-primary js-btn-minus" type="button">&minus;</button>
-                      </div>
-                      <input type="text" class="form-control text-center" value="1" placeholder="" aria-label="Example text with button addon" aria-describedby="button-addon1">
-                      <div class="input-group-append">
-                        <button class="btn btn-outline-primary js-btn-plus" type="button">&plus;</button>
-                      </div>
-                    </div>
-
-                  </td>
-                  <td>$49.00</td>
-                  <td><a href="#" class="btn btn-primary btn-sm">X</a></td>
-                </tr>
+                    </td>
+                    <td>${{ item.subtotal }}</td>
+                    <td>
+                      <form method="post" action="{% url 'actualizar_carrito' %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="id_producto" value="{{ item.id }}">
+                        <input type="hidden" name="accion" value="eliminar">
+                        <button type="submit" class="btn btn-primary btn-sm">X</button>
+                      </form>
+                    </td>
+                  </tr>
+                {% endfor %}
               </tbody>
             </table>
           </div>
@@ -108,7 +103,7 @@
                   <span class="text-black">Subtotal</span>
                 </div>
                 <div class="col-md-6 text-right">
-                  <strong class="text-black">$230.00</strong>
+                  <strong class="text-black">${{ total }}</strong>
                 </div>
               </div>
               <div class="row mb-5">
@@ -116,7 +111,7 @@
                   <span class="text-black">Total</span>
                 </div>
                 <div class="col-md-6 text-right">
-                  <strong class="text-black">$230.00</strong>
+                  <strong class="text-black">${{ total }}</strong>
                 </div>
               </div>
 
