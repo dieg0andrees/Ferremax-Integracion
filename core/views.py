@@ -8,7 +8,6 @@ from .decorators import solo_admin
 # Create your views here.
 def index(request):
     usuario = request.session.get('usuario')
-    print(request.session.get("carrito"))
     return render(request, 'core/index.html', {'usuario': usuario})
 
 def about(request):
@@ -199,7 +198,7 @@ def delete_empleado(request, rut):
 
 def productos_view(request):
     try:
-        response = requests.get("http://localhost:8001/productos")
+        response = requests.get("http://localhost:3000/productos")
         if response.status_code == 200:
             productos = response.json()
         else:
@@ -219,13 +218,18 @@ def productos_view(request):
 
 def agregar_al_carrito(request):
     if request.method == 'POST':
-        id_producto = str(request.POST.get('id_producto'))
-        print("ID producto recibido:", id_producto)
+        id_producto = request.POST.get('id_producto')
+        if not id_producto:
+            messages.error(request, "No se recibió ID de producto.")
+            return redirect('shop')
 
+        id_producto = str(id_producto)
         carrito = request.session.get('carrito', {})
         carrito[id_producto] = carrito.get(id_producto, 0) + 1
         request.session['carrito'] = carrito
+        request.session.modified = True  # Forzar actualización en sesión
 
+        print("Producto agregado:", id_producto)
         print("Carrito actual:", carrito)
 
         messages.success(request, "Producto agregado al carrito.")
@@ -237,14 +241,14 @@ def cart(request):
     total_general = 0
 
     try:
-        response = requests.get("http://localhost:8001/productos")
+        response = requests.get("http://localhost:3000/productos")
         if response.status_code == 200:
             todos_los_productos = response.json()
             # Indexar por id_producto (¡ojo que viene como string!)
             productos_por_id = {p["id_producto"]: p for p in todos_los_productos}
 
             for id_str, cantidad in carrito.items():
-                producto = productos_por_id.get(id_str)
+                producto = productos_por_id.get(int(id_str))
                 if producto:
                     precio = int(producto["precio_producto"])  # 👈 asegúrate que sea int
                     subtotal = precio * cantidad
@@ -252,7 +256,7 @@ def cart(request):
                     productos_en_carrito.append({
                         "id": id_str,
                         "nombre": producto["nombre_producto"],
-                        "imagen": producto["url_imagen"],
+                        "imagen": producto["imagenes"],
                         "precio": precio,
                         "cantidad": cantidad,
                         "subtotal": subtotal,
@@ -277,7 +281,10 @@ def actualizar_carrito(request):
             if accion == "sumar":
                 carrito[id_producto] += 1
             elif accion == "restar":
-                carrito[id_producto] = max(1, carrito[id_producto] - 1)
+                carrito[id_producto] -= 1
+                # Si la cantidad llega a 0, eliminar el producto del carrito
+                if carrito[id_producto] <= 0:
+                    carrito.pop(id_producto)
             elif accion == "eliminar":
                 carrito.pop(id_producto)
 

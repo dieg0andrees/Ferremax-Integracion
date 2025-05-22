@@ -1,129 +1,133 @@
 {% extends 'core/base.html' %}
 {% load static %}
 {% block title %}Nosotros - Ferremas{% endblock %}
+
 {% block content %}
-  <div class="site-section">
-    <div class="container">
-      <div class="row mb-5">
-        <form class="col-md-12" method="post">
-          <div class="site-blocks-table">
-            <table class="table table-bordered">
-              <thead>
-                <tr>
-                  <th class="product-thumbnail">Imagen</th>
-                  <th class="product-name">Producto</th>
-                  <th class="product-price">Precio</th>
-                  <th class="product-quantity">Cantidad</th>
-                  <th class="product-total">Total</th>
-                  <th class="product-remove">Remove</th>
-                </tr>
-              </thead>
-              <tbody>
-                {% for item in carrito_productos %}
-                  <tr>
-                    <td class="product-thumbnail">
-                      {% get_media_prefix as MEDIA_URL %}
-                      <img src="{{ MEDIA_URL }}{{ item.imagen }}" alt="{{ item.nombre }}" class="img-fluid">
-                    </td>
-                    <td class="product-name">
-                      <h2 class="h5 text-black">{{ item.nombre }}</h2>
-                    </td>
-                    <td>${{ item.precio }}</td>
-                    <td>
-                      <div class="input-group mb-3" style="max-width: 120px;">
-                        <div class="input-group-prepend">
-                          <form method="post" action="{% url 'actualizar_carrito' %}">
-                            {% csrf_token %}
-                            <input type="hidden" name="id_producto" value="{{ item.id }}">
-                            <input type="hidden" name="accion" value="restar">
-                            <button class="btn btn-outline-primary js-btn-minus" type="submit">&minus;</button>
-                          </form>
-                        </div>
-                        <input type="text" class="form-control text-center" value="{{ item.cantidad }}" readonly>
-                        <div class="input-group-append">
-                          <form method="post" action="{% url 'actualizar_carrito' %}">
-                            {% csrf_token %}
-                            <input type="hidden" name="id_producto" value="{{ item.id }}">
-                            <input type="hidden" name="accion" value="sumar">
-                            <button class="btn btn-outline-primary js-btn-plus" type="submit">&plus;</button>
-                          </form>
-                        </div>
+<div class="site-section">
+  <div class="container">
+    <div class="row mb-5">
+      <div class="col-md-12">
+        <div class="site-blocks-table">
+          <table class="table table-bordered">
+            <thead>
+              <tr>
+                <th class="product-thumbnail">Imagen</th>
+                <th class="product-name">Producto</th>
+                <th class="product-price">Precio</th>
+                <th class="product-quantity">Cantidad</th>
+                <th class="product-total">Total</th>
+                <th class="product-remove">Remove</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for item in carrito_productos %}
+              <tr>
+                <td class="product-thumbnail">
+                  {% get_media_prefix as MEDIA_URL %}
+                  <img src="{{ MEDIA_URL }}{{ item.imagen }}" alt="{{ item.nombre }}" class="img-fluid">
+                </td>
+                <td class="product-name">
+                  <h2 class="h5 text-black">{{ item.nombre }}</h2>
+                </td>
+                <td>${{ item.precio }}</td>
+                <td>
+                  <div class="input-group mb-3" style="max-width: 150px;">
+                    <form method="post" action="{% url 'actualizar_carrito' %}">
+                      {% csrf_token %}
+                      <input type="hidden" name="id_producto" value="{{ item.id }}">
+                      <input type="hidden" name="accion" value="restar">
+                      <div class="input-group-prepend">
+                        <button class="btn btn-outline-primary" type="submit">&minus;</button>
                       </div>
-                    </td>
-                    <td>${{ item.subtotal }}</td>
-                    <td>
-                      <form method="post" action="{% url 'actualizar_carrito' %}">
-                        {% csrf_token %}
-                        <input type="hidden" name="id_producto" value="{{ item.id }}">
-                        <input type="hidden" name="accion" value="eliminar">
-                        <button type="submit" class="btn btn-primary btn-sm">X</button>
-                      </form>
-                    </td>
-                  </tr>
-                {% endfor %}
-              </tbody>
-            </table>
-          </div>
-        </form>
+                    </form>
+
+                    <input type="text" class="form-control text-center" value="{{ item.cantidad }}" readonly>
+
+                    <form method="post" action="{% url 'actualizar_carrito' %}">
+                      {% csrf_token %}
+                      <input type="hidden" name="id_producto" value="{{ item.id }}">
+                      <input type="hidden" name="accion" value="sumar">
+                      <div class="input-group-append">
+                        <button class="btn btn-outline-primary" type="submit">&plus;</button>
+                      </div>
+                    </form>
+                  </div>
+                </td>
+                <td>${{ item.subtotal }}</td>
+                <td>
+                  <form method="post" action="{% url 'actualizar_carrito' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="id_producto" value="{{ item.id }}">
+                    <input type="hidden" name="accion" value="eliminar">
+                    <button type="submit" class="btn btn-primary btn-sm">X</button>
+                  </form>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
       </div>
-      
-      <div class="row">
-        <div class="col-md-6">
-          <div class="row mb-5">
-            <div class="col-md-6 mb-3 mb-md-0">
-              <button class="btn btn-primary btn-sm btn-block">Update Cart</button>
-            </div>
-            <div class="col-md-6">
-              <button class="btn btn-outline-primary btn-sm btn-block">Continue Shopping</button>
-            </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-6">
+        <div class="row mb-5">
+          <div class="col-md-6 mb-3 mb-md-0">
+            <button class="btn btn-primary btn-sm btn-block">Update Cart</button>
           </div>
-          <div class="row">
-            <div class="col-md-12">
-              <label class="text-black h4" for="coupon">Coupon</label>
-              <p>Enter your coupon code if you have one.</p>
-            </div>
-            <div class="col-md-8 mb-3 mb-md-0">
-              <input type="text" class="form-control py-3" id="coupon" placeholder="Coupon Code">
-            </div>
-            <div class="col-md-4">
-              <button class="btn btn-primary btn-sm">Apply Coupon</button>
-            </div>
+          <div class="col-md-6">
+            <button class="btn btn-outline-primary btn-sm btn-block">Continue Shopping</button>
           </div>
         </div>
-        <div class="col-md-6 pl-5">
-          <div class="row justify-content-end">
-            <div class="col-md-7">
-              <div class="row">
-                <div class="col-md-12 text-right border-bottom mb-5">
-                  <h3 class="text-black h4 text-uppercase">Cart Totals</h3>
-                </div>
-              </div>
-              <div class="row mb-3">
-                <div class="col-md-6">
-                  <span class="text-black">Subtotal</span>
-                </div>
-                <div class="col-md-6 text-right">
-                  <strong class="text-black">${{ total }}</strong>
-                </div>
-              </div>
-              <div class="row mb-5">
-                <div class="col-md-6">
-                  <span class="text-black">Total</span>
-                </div>
-                <div class="col-md-6 text-right">
-                  <strong class="text-black">${{ total }}</strong>
-                </div>
-              </div>
+        <div class="row">
+          <div class="col-md-12">
+            <label class="text-black h4" for="coupon">Coupon</label>
+            <p>Enter your coupon code if you have one.</p>
+          </div>
+          <div class="col-md-8 mb-3 mb-md-0">
+            <input type="text" class="form-control py-3" id="coupon" placeholder="Coupon Code">
+          </div>
+          <div class="col-md-4">
+            <button class="btn btn-primary btn-sm">Apply Coupon</button>
+          </div>
+        </div>
+      </div>
 
-              <div class="row">
-                <div class="col-md-12">
-                  <button class="btn btn-primary btn-lg py-3 btn-block" onclick="window.location='checkout.html'">Proceed To Checkout</button>
-                </div>
+      <div class="col-md-6 pl-5">
+        <div class="row justify-content-end">
+          <div class="col-md-7">
+            <div class="row">
+              <div class="col-md-12 text-right border-bottom mb-5">
+                <h3 class="text-black h4 text-uppercase">Cart Totals</h3>
+              </div>
+            </div>
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <span class="text-black">Subtotal</span>
+              </div>
+              <div class="col-md-6 text-right">
+                <strong class="text-black">${{ total }}</strong>
+              </div>
+            </div>
+            <div class="row mb-5">
+              <div class="col-md-6">
+                <span class="text-black">Total</span>
+              </div>
+              <div class="col-md-6 text-right">
+                <strong class="text-black">${{ total }}</strong>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-12">
+                <button class="btn btn-primary btn-lg py-3 btn-block" onclick="window.location='checkout.html'">Proceed To Checkout</button>
               </div>
             </div>
           </div>
         </div>
       </div>
     </div>
+
   </div>
+</div>
 {% endblock %}
