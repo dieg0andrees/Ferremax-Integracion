@@ -16,6 +16,15 @@ urlpatterns = [
     path('logout/', logout_view, name='logout'),
     path('register/', register, name='register'),
 
+    #URLs VENDEDOR
+    path('home_vendedor/', home_vendedor, name="home_vendedor"),
+
+    #URLs BODEGUERO
+    path('home_bodeguero/', home_bodeguero, name="home_bodeguero"),
+
+    #URLs CONTADOR
+    path('home_contador/', home_contador, name="home_contador"),
+
     #Rutas del crud del admin
     path('home_admin/',home_admin, name="home_admin"),
     path('add_empleado/',add_empleado, name="add_empleado"),

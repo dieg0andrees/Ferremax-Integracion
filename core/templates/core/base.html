@@ -51,7 +51,7 @@
               
                     {% if request.session.usuario %}
                     <li class="nav-item d-flex align-items-center gap-3">
-                        <h5 class="mb-0 fs-6">Bienvenido(a), {{ usuario.nombre }}</h5>
+                        <h5 class="mb-0 fs-6">Bienvenido(a), {{ usuario.nombre }}, {{ usuario.rut }}</h5>
                         <a class="nav-link" href="{% url 'logout' %}">Sign out</a>
                     </li>
                     {% else %}
@@ -93,6 +93,21 @@
             {% if request.session.usuario and request.session.usuario.rol == "Admin" %}
             <li>
                 <a class="text-danger" href="{% url 'home_admin' %}">Gestión de Empleados</a>
+            </li>
+            {% endif %}
+            {% if request.session.usuario and request.session.usuario.rol == "Vendedor" %}
+            <li>
+                <a class="text-danger" href="{% url 'home_vendedor' %}">Gestión de Vendedor</a>
+            </li>
+            {% endif %}
+            {% if request.session.usuario and request.session.usuario.rol == "Bodeguero" %}
+            <li>
+                <a class="text-danger" href="{% url 'home_bodeguero' %}">Gestión de Bodeguero</a>
+            </li>
+            {% endif %}
+            {% if request.session.usuario and request.session.usuario.rol == "Contador" %}
+            <li>
+                <a class="text-danger" href="{% url 'home_contador' %}">Gestión de Contador</a>
             </li>
             {% endif %}
         </div>

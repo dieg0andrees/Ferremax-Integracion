@@ -3,7 +3,7 @@ from django.shortcuts import render,redirect
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib import messages
 from django.core.paginator import Paginator
-from .decorators import solo_admin
+from .decorators import *
 
 # Create your views here.
 def index(request):
@@ -291,3 +291,19 @@ def actualizar_carrito(request):
         request.session["carrito"] = carrito
 
     return redirect("cart")
+
+
+#VISTAS VENDEDOR
+@solo_vendedor
+def home_vendedor(request):
+    return render(request, "core/vendedor/home_vendedor.html")
+
+#VISTAS Bodeguero
+@solo_bodeguero
+def home_bodeguero(request):
+    return render(request, "core/bodeguero/home_bodeguero.html")
+
+#VISTAS Contador
+@solo_contador
+def home_contador(request):
+    return render(request, "core/contador/home_contador.html")
