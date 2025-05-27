@@ -15,6 +15,7 @@ urlpatterns = [
     path('login/',login, name="login"),
     path('logout/', logout_view, name='logout'),
     path('register/', register, name='register'),
+    path('pago/', pago, name='pago'),
 
     #URLs VENDEDOR
     path('home_vendedor/', home_vendedor, name="home_vendedor"),

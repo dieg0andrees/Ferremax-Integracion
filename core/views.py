@@ -261,6 +261,9 @@ def cart(request):
                         "cantidad": cantidad,
                         "subtotal": subtotal,
                     })
+            # ✅ Guardar productos del carrito y total en la sesión
+            request.session["carrito_productos"] = productos_en_carrito
+            request.session["carrito_total"] = total_general
     except Exception as e:
         print("ERROR en carrito:", e)
         messages.error(request, "Error al cargar productos desde la API.")
@@ -307,3 +310,34 @@ def home_bodeguero(request):
 @solo_contador
 def home_contador(request):
     return render(request, "core/contador/home_contador.html")
+
+
+#PROCESAR PAGO
+def pago(request):
+    try:
+        # Llamada a la API del dólar
+        response = requests.get('https://mindicador.cl/api/dolar')
+        if response.status_code == 200:
+            datos_dolar = response.json()
+            valor_dolar = datos_dolar['serie'][0]['valor']  # Extraer valor actual del dólar
+        else:
+            valor_dolar = 0  # En caso de error, dejarlo en 0 para evitar división por cero
+            messages.warning(request, "No se pudo obtener el valor del dólar.")
+    except Exception as e:
+        print("Error al conectar con la API mi indicador:", e)
+        valor_dolar = 0
+
+    # Obtener datos desde la sesión
+    productos_en_carrito = request.session.get("carrito_productos", [])
+    total_general = request.session.get("carrito_total", 0)
+
+    total_dolar = 0
+    if valor_dolar > 0:
+        total_dolar = round(total_general / valor_dolar, 2)
+
+    context = {
+        "carrito_productos": productos_en_carrito,
+        "total": total_general,
+        "total_dolar": total_dolar,
+    }
+    return render(request, "core/checkout.html", context)

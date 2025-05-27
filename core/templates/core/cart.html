@@ -74,22 +74,22 @@
       <div class="col-md-6">
         <div class="row mb-5">
           <div class="col-md-6 mb-3 mb-md-0">
-            <button class="btn btn-primary btn-sm btn-block">Update Cart</button>
+            <p class="btn btn-sm btn-primary ">
+              <a class="text-light" href="{% url 'shop' %}">Seguir comprando</a>
+            </p>
           </div>
-          <div class="col-md-6">
-            <button class="btn btn-outline-primary btn-sm btn-block">Continue Shopping</button>
-          </div>
+
         </div>
         <div class="row">
           <div class="col-md-12">
-            <label class="text-black h4" for="coupon">Coupon</label>
-            <p>Enter your coupon code if you have one.</p>
+            <label class="text-black h4" for="coupon">Cupón de descuento</label>
+            <p>Si tienes un cupón de descuento ingresalo aquí.</p>
           </div>
           <div class="col-md-8 mb-3 mb-md-0">
-            <input type="text" class="form-control py-3" id="coupon" placeholder="Coupon Code">
+            <input type="text" class="form-control py-3" id="coupon" placeholder="Ingresa cupón">
           </div>
           <div class="col-md-4">
-            <button class="btn btn-primary btn-sm">Apply Coupon</button>
+            <button class="btn btn-primary btn-sm">Aplicar cupón</button>
           </div>
         </div>
       </div>
@@ -120,7 +120,9 @@
             </div>
             <div class="row">
               <div class="col-md-12">
-                <button class="btn btn-primary btn-lg py-3 btn-block" onclick="window.location='checkout.html'">Proceed To Checkout</button>
+                <p class="btn btn-sm btn-primary ">
+                  <a class="text-light" href="{% url 'pago' %}">Ir a pagar</a>
+                </p>
               </div>
             </div>
           </div>
