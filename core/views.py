@@ -4,6 +4,10 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib import messages
 from django.core.paginator import Paginator
 from .decorators import *
+import json
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.utils import timezone
 
 # Create your views here.
 def index(request):
@@ -313,31 +317,91 @@ def home_contador(request):
 
 
 #PROCESAR PAGO
+
 def pago(request):
-    try:
-        # Llamada a la API del dólar
-        response = requests.get('https://mindicador.cl/api/dolar')
-        if response.status_code == 200:
-            datos_dolar = response.json()
-            valor_dolar = datos_dolar['serie'][0]['valor']  # Extraer valor actual del dólar
-        else:
-            valor_dolar = 0  # En caso de error, dejarlo en 0 para evitar división por cero
-            messages.warning(request, "No se pudo obtener el valor del dólar.")
-    except Exception as e:
-        print("Error al conectar con la API mi indicador:", e)
-        valor_dolar = 0
+    if request.method == "GET":
+        # Aquí cargas el checkout como antes
+        try:
+            response = requests.get('https://mindicador.cl/api/dolar')
+            if response.status_code == 200:
+                datos_dolar = response.json()
+                valor_dolar = datos_dolar['serie'][0]['valor']
+            else:
+                valor_dolar = 0
+                messages.warning(request, "No se pudo obtener el valor del dólar.")
+        except Exception as e:
+            print("Error al conectar con la API mi indicador:", e)
+            valor_dolar = 0
 
-    # Obtener datos desde la sesión
-    productos_en_carrito = request.session.get("carrito_productos", [])
-    total_general = request.session.get("carrito_total", 0)
+        productos_en_carrito = request.session.get("carrito_productos", [])
+        total_general = request.session.get("carrito_total", 0)
 
-    total_dolar = 0
-    if valor_dolar > 0:
-        total_dolar = round(total_general / valor_dolar, 2)
+        total_dolar = 0
+        if valor_dolar > 0:
+            total_dolar = round(total_general / valor_dolar, 2)
 
-    context = {
-        "carrito_productos": productos_en_carrito,
-        "total": total_general,
-        "total_dolar": total_dolar,
-    }
-    return render(request, "core/checkout.html", context)
+        context = {
+            "carrito_productos": productos_en_carrito,
+            "total": total_general,
+            "total_dolar": total_dolar,
+        }
+        return render(request, "core/checkout.html", context)
+
+    elif request.method == "POST":
+        try:
+            usuario = request.session.get('usuario')
+            data = json.loads(request.body)
+
+            # Obtener datos del carrito y usuario
+            productos_en_carrito = request.session.get("carrito_productos", [])
+            total_general = request.session.get("carrito_total", 0)
+            if not usuario or "rut" not in usuario:
+                return JsonResponse({"status": "error", "message": "Usuario no válido en sesión"}, status=400)
+
+            rut_user = usuario["rut"]
+
+            # Crear JSON para enviar a la API externa
+            pedidoData = {
+                "fecha_pedido": timezone.now().date().isoformat(),
+                "cantidad_pedido": sum(item['cantidad'] for item in productos_en_carrito),
+                "subtotal_pedido": total_general,
+                "rut_user": rut_user,
+                "id_estado_pedido": 2,  # Pagado
+                "id_productos": [
+                    {
+                        "id_producto": item['id'],
+                        "cantidad_producto": item['cantidad']
+                    } for item in productos_en_carrito
+                ],
+                "pago": {
+                    "fecha_pago": timezone.now().date().isoformat(),
+                    "monto_pagar": total_general,
+                    "id_medio_pago": 1,  # PayPal
+                    "id_estado_pago": 1  # aprobado
+                }
+            }
+
+            # URL de tu API externa para crear pedido
+            url_api_pedido = "http://localhost:8001/pedidos/"  # Cambia aquí a la URL real
+
+
+            response = requests.post(url_api_pedido, json=pedidoData)
+
+            if response.status_code == 201 or response.status_code == 200:
+                # Pedido creado OK
+                # Limpiar carrito en sesión
+                request.session["carrito_productos"] = []
+                request.session["carrito_total"] = 0
+                return JsonResponse({"status": "success"})
+            else:
+                return JsonResponse({
+                    "status": "error",
+                    "message": f"Error en API externa: {response.status_code} {response.text}"
+                })
+
+        except Exception as e:
+            print("Error al procesar pago:", e)
+            return JsonResponse({"status": "error", "message": str(e)})
+
+    else:
+        return JsonResponse({"status": "error", "message": "Método no permitido"}, status=405)

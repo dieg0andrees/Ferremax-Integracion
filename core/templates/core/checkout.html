@@ -215,7 +215,8 @@
                         'Content-Type': 'application/json',
                         'X-CSRFToken': '{{ csrf_token }}'
                     },
-                    credentials: 'same-origin'
+                    credentials: 'same-origin',
+                    body: JSON.stringify({ pago: true })  // <-- Añade esto
                 }).then(response => response.json()).then(data => {
                     if (data.status === 'success') {
                         window.location.href = "{% url 'thankyou' %}";
