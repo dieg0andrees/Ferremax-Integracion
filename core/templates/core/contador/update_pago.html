@@ -1,0 +1,84 @@
+{% extends 'core/base.html' %}
+{% block title %}Actualizar Pago{% endblock %}
+{% block content %}
+
+<style>
+  .form-container {
+    background-color: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    max-width: 600px;
+    margin: 40px auto;
+  }
+
+  .form-container h2 {
+    margin-bottom: 1.5rem;
+    font-weight: bold;
+    text-align: center;
+    font-family: 'Ubuntu', sans-serif;
+    color: black;
+  }
+
+  label {
+    color: black;
+    font-family: 'Ubuntu', sans-serif;
+    font-weight: 500;
+  }
+
+  .btn-custom {
+    background-color: #0d6efd;
+    color: white;
+    transition: 0.3s;
+  }
+
+  .btn-custom:hover {
+    background-color: #0b5ed7;
+  }
+
+  .volver-link {
+    display: block;
+    margin-top: 1rem;
+    text-align: center;
+  }
+</style>
+
+<div class="form-container">
+  <h2>Actualizar Pago</h2>
+
+  {% if messages %}
+    <div class="mb-3">
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+          {{ message }}
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+  <form method="post">
+    {% csrf_token %}
+    <div class="mb-3">
+      <label for="nombre">Id del pago</label>
+      <input type="text" name="id_pago" class="form-control" required value="{{ pago.id_pago }}" readonly>
+    </div>
+
+    <div class="mb-3">
+      <label for="p_apellido">Fecha pago</label>
+      <input type="text" name="fecha_pago" class="form-control" required value="{{ pago.fecha_pago }}">
+    </div>
+
+    <div class="mb-3">
+      <label for="s_apellido">Monto venta</label>
+      <input type="text" name="monto_pagar" class="form-control" required value="{{ pago.monto_pagar }}">
+    </div>
+
+    <div class="mb-3">
+      <label for="correo_user">Estado de pago</label>
+      <input type="email" name="estado_pago" class="form-control" required value="{{ pago.estado_pago }}">
+    </div>
+    <button type="submit" class="btn btn-custom w-100 mt-3">Guardar Cambios</button>
+    <a href="{% url 'home_contador' %}" class="volver-link">← Cancelar</a>
+  </form>
+</div>
+
+{% endblock %}

@@ -308,6 +308,7 @@ def actualizar_carrito(request):
 #VISTAS VENDEDOR
 @solo_vendedor
 def home_vendedor(request):
+    
     return render(request, "core/vendedor/home_vendedor.html")
 
 #VISTAS Bodeguero
@@ -318,7 +319,50 @@ def home_bodeguero(request):
 #VISTAS Contador
 @solo_contador
 def home_contador(request):
-    return render(request, "core/contador/home_contador.html")
+    response = requests.get('http://localhost:8001/pago')
+    pago = response.json()
+    pagos = [u for u in pago if u.get("medio_pago") != "Paypal"]
+
+    paginator = Paginator(pago, 10)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    aux = {
+        'lista' : pagos,
+        'page_obj' : page_obj
+    }
+    return render(request, "core/contador/home_contador.html", aux)
+
+def update_pago(request, id_pago):
+    try:
+        get_response = requests.get(f"http://localhost:8001/pago/{id_pago}")
+        if get_response.status_code != 200:
+            messages.error(request, "Pago no encontrado.")
+            return redirect("home_contador")  # Importante: detener aquí
+
+        pago = get_response.json()
+    except requests.exceptions.RequestException:
+        messages.error(request, "Error al conectar con el servidor.")
+        return redirect("home_contador")
+
+    if request.method == 'POST':
+        data = {
+            "fecha_pago": request.POST.get("fecha_pago"),
+            "monto_pagar": request.POST.get("monto_pagar"),
+            "estado_pago": request.POST.get("estado_pago"),
+        }
+
+        try:
+            response = requests.patch(f"http://localhost:8001/pago/{id_pago}", json=data)
+            if response.status_code == 200:
+                messages.success(request, "Pago actualizado correctamente.")
+                return redirect("home_contador")
+            else:
+                messages.error(request, "Error al actualizar el pago.")
+        except requests.exceptions.RequestException:
+            messages.error(request, "No se pudo conectar con el servidor.")
+
+    return render(request, "core/contador/update_pago.html", {"pago": pago})
 
 
 #PROCESAR PAGO

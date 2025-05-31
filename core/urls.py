@@ -26,6 +26,7 @@ urlpatterns = [
 
     #URLs CONTADOR
     path('home_contador/', home_contador, name="home_contador"),
+    path('update_pago/<str:id_pago>/', update_pago, name='update_pago'),
 
     #Rutas del crud del admin
     path('home_admin/',home_admin, name="home_admin"),
