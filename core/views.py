@@ -335,10 +335,11 @@ def home_contador(request):
 
 def update_pago(request, id_pago):
     try:
+        # Obtener el pago actual desde la API
         get_response = requests.get(f"http://localhost:8001/pago/{id_pago}")
         if get_response.status_code != 200:
             messages.error(request, "Pago no encontrado.")
-            return redirect("home_contador")  # Importante: detener aquí
+            return redirect("home_contador")
 
         pago = get_response.json()
     except requests.exceptions.RequestException:
@@ -346,19 +347,34 @@ def update_pago(request, id_pago):
         return redirect("home_contador")
 
     if request.method == 'POST':
-        data = {
-            "fecha_pago": request.POST.get("fecha_pago"),
-            "monto_pagar": request.POST.get("monto_pagar"),
-            "estado_pago": request.POST.get("estado_pago"),
-        }
+        # Construir el diccionario de datos solo con campos presentes
+        data = {}
+
+        monto_pagar = request.POST.get("monto_pagar")
+        if monto_pagar:
+            data["monto_pagar"] = int(monto_pagar)
+
+        id_estado_pago = request.POST.get("id_estado_pago")
+        if id_estado_pago:
+            data["id_estado_pago"] = int(id_estado_pago)
+
+        # Siempre enviar campos que no provienen del formulario pero son requeridos por lógica
+        data["url_comprobante"] = pago.get("url_comprobante")
+        data["id_pedido"] = pago.get("id_pedido")
+        data["id_medio_pago"] = 2  # Puedes hacer esto dinámico si es necesario
 
         try:
-            response = requests.patch(f"http://localhost:8001/pago/{id_pago}", json=data)
+            response = requests.patch(
+                f"http://localhost:8001/pago/{id_pago}",
+                json=data
+            )
             if response.status_code == 200:
                 messages.success(request, "Pago actualizado correctamente.")
+                id_pedido = pago["id_pedido"]
+                requests.patch(f"http://localhost:8001/pedidos/{id_pedido}", json={"id_estado_pedido": 2})
                 return redirect("home_contador")
             else:
-                messages.error(request, "Error al actualizar el pago.")
+                messages.error(request, f"Error al actualizar el pago: {response.json().get('detail', 'Error desconocido')}")
         except requests.exceptions.RequestException:
             messages.error(request, "No se pudo conectar con el servidor.")
 
@@ -492,7 +508,7 @@ def pago_transferencia(request):
                 "cantidad_pedido": sum(item['cantidad'] for item in productos_en_carrito),
                 "subtotal_pedido": total_general,
                 "rut_user": rut_user,
-                "id_estado_pedido": 2,  # Por pagar
+                "id_estado_pedido": 1,  # Por pagar
                 "id_productos": [
                     {
                         "id_producto": item['id'],
@@ -504,7 +520,7 @@ def pago_transferencia(request):
                     "monto_pagar": total_general,
                     "url_comprobante": url_comprobante,
                     "id_medio_pago": 2,  # Transferencia
-                    "id_estado_pago": 2  # Por aprobar
+                    "id_estado_pago": 1  # Por aprobar
                 }
             }
 

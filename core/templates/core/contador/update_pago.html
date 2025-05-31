@@ -58,23 +58,37 @@
   <form method="post">
     {% csrf_token %}
     <div class="mb-3">
-      <label for="nombre">Id del pago</label>
+      <label for="id_pago">Id del pago</label>
       <input type="text" name="id_pago" class="form-control" required value="{{ pago.id_pago }}" readonly>
     </div>
 
     <div class="mb-3">
-      <label for="p_apellido">Fecha pago</label>
-      <input type="text" name="fecha_pago" class="form-control" required value="{{ pago.fecha_pago }}">
+      <label for="fecha_pago">Fecha pago</label>
+      <input type="text" name="fecha_pago" class="form-control" required value="{{ pago.fecha_pago }}" readonly>
     </div>
 
     <div class="mb-3">
-      <label for="s_apellido">Monto venta</label>
-      <input type="text" name="monto_pagar" class="form-control" required value="{{ pago.monto_pagar }}">
+      <label for="monto_pagar">Monto venta</label>
+      <input type="text" name="monto_pagar" class="form-control" required value="{{ pago.monto_pagar }}" readonly>
     </div>
-
     <div class="mb-3">
-      <label for="correo_user">Estado de pago</label>
-      <input type="email" name="estado_pago" class="form-control" required value="{{ pago.estado_pago }}">
+      <label for="url_comprobante">Url comprobante</label>
+      <input type="text" name="url_comprobante" class="form-control" required value="{{ pago.url_comprobante }}" readonly>
+    </div>
+    <div class="mb-3">
+      <label for="medio_pago">Medio de pago</label>
+      <input type="text" name="medio_pago" class="form-control" required value="{{ pago.medio_pago }}" readonly>
+    </div>
+    <div class="mb-3">
+      <label for="id_estado_pago">Estado Pago</label>
+      <select name="id_estado_pago" class="form-control" required>
+        <option value="1" {% if pago.estado_pago == "Por aprobar" %}selected{% endif %}>Por aprobar</option>
+        <option value="2" {% if pago.estado_pago == "Aprobado" %}selected{% endif %}>Aprobado</option>
+      </select>
+    </div>
+    <div class="mb-3">
+      <label for="id_pedido">Id del pedido</label>
+      <input type="text" name="id_pedido" class="form-control" required value="{{ pago.id_pedido }}" readonly>
     </div>
     <button type="submit" class="btn btn-custom w-100 mt-3">Guardar Cambios</button>
     <a href="{% url 'home_contador' %}" class="volver-link">← Cancelar</a>
