@@ -20,6 +20,7 @@ urlpatterns = [
 
     #URLs VENDEDOR
     path('home_vendedor/', home_vendedor, name="home_vendedor"),
+    path('update_pedido/<str:id_pedido>/', update_pedido, name='update_pedido'),
 
     #URLs BODEGUERO
     path('home_bodeguero/', home_bodeguero, name="home_bodeguero"),

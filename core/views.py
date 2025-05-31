@@ -308,8 +308,78 @@ def actualizar_carrito(request):
 #VISTAS VENDEDOR
 @solo_vendedor
 def home_vendedor(request):
-    
-    return render(request, "core/vendedor/home_vendedor.html")
+    response = requests.get('http://localhost:8001/producto_pedido')
+    producto_pedido = response.json()
+    producto_pedidos = [u for u in producto_pedido if u.get("descripcion") != "Por pagar"]
+
+    paginator = Paginator(producto_pedido, 10)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    aux = {
+        'lista' : producto_pedidos,
+        'page_obj' : page_obj
+    }
+    return render(request, "core/vendedor/home_vendedor.html",aux)
+
+def update_pedido(request, id_pedido):
+    try:
+        get_response = requests.get(f"http://localhost:8001/producto_pedido/{id_pedido}")
+        if get_response.status_code != 200:
+            messages.error(request, "Pedido no encontrado.")
+            return redirect("home_vendedor")
+
+        pedido = get_response.json()
+
+        # Extraer producto (el primero de la lista)
+        producto = pedido["productos"][0] if pedido.get("productos") else {}
+
+        # Mezclar los datos para el template
+        datos_pedido = {
+            "id_pedido": pedido["id_pedido"],
+            "nombre_producto": producto.get("nombre_producto", ""),
+            "marca_descripcion": producto.get("marca_descripcion", ""),
+            "precio_producto": producto.get("precio_producto", ""),
+            "tipo_producto": producto.get("tipo_producto", ""),
+            "cantidad_producto": producto.get("cantidad_producto", ""),
+            "nombre_user": pedido.get("nombre_user", ""),
+            "apellido": pedido.get("apellido", ""),
+            "estado_pedido": pedido.get("estado_pedido", ""),
+        }
+
+    except requests.exceptions.RequestException:
+        messages.error(request, "Error al conectar con el servidor.")
+        return redirect("home_vendedor")
+
+    if request.method == 'POST':
+        data = {}
+        id_estado_pedido = request.POST.get("id_estado_pedido")
+        if id_estado_pedido:
+            data["id_estado_pedido"] = int(id_estado_pedido)
+
+        data["nombre_producto"] = request.POST.get("nombre_producto")
+        data["marca_descripcion"] = request.POST.get("marca_descripcion")
+        data["precio_producto"] = request.POST.get("precio_producto")
+        data["tipo_producto"] = request.POST.get("tipo_producto")
+        data["cantidad_producto"] = request.POST.get("cantidad_producto")
+        data["nombre_user"] = request.POST.get("nombre_user")
+        data["apellido"] = request.POST.get("apellido")
+
+        try:
+            response = requests.patch(
+                f"http://localhost:8001/producto_pedido/{id_pedido}",
+                json=data
+            )
+            if response.status_code == 200:
+                messages.success(request, "Pedido actualizado correctamente.")
+                requests.patch(f"http://localhost:8001/pedidos/{id_pedido}", json={"id_estado_pedido": id_estado_pedido})
+                return redirect("home_vendedor")
+            else:
+                messages.error(request, f"Error al actualizar: {response.json().get('detail', 'Error desconocido')}")
+        except requests.exceptions.RequestException:
+            messages.error(request, "No se pudo conectar con el servidor.")
+
+    return render(request, "core/vendedor/update_pedido.html", {"pedido": datos_pedido})
 
 #VISTAS Bodeguero
 @solo_bodeguero

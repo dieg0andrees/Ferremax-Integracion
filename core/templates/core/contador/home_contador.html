@@ -13,7 +13,7 @@
           <th>Fecha pago</th>
           <th>Monto venta</th>
           <th>Comprobante</th>
-          <th>Estado pago</th>
+          <th class="text-danger">Estado pago</th>
         </tr>
       </thead>
       <tbody>
@@ -33,7 +33,7 @@
                     {% endif %}
                 </td>
 
-                <td>{{ aux.estado_pago }}</td>
+                <td class="text-danger">{{ aux.estado_pago }}</td>
                 <td>
                   <a class="btn btn-info" href="{% url 'update_pago' aux.id_pago %}">Actualizar</a>
                 </td>
