@@ -1,3 +1,4 @@
+import os
 import requests
 from django.shortcuts import render,redirect
 from django.contrib.auth.forms import AuthenticationForm
@@ -8,6 +9,10 @@ import json
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.utils import timezone
+from django.core.files.storage import default_storage
+from django.core.files.base import ContentFile
+from django.conf import settings
+
 
 # Create your views here.
 def index(request):
@@ -366,6 +371,7 @@ def pago(request):
                 "cantidad_pedido": sum(item['cantidad'] for item in productos_en_carrito),
                 "subtotal_pedido": total_general,
                 "rut_user": rut_user,
+                "url_imagen_comprobante":"",
                 "id_estado_pedido": 2,  # Pagado
                 "id_productos": [
                     {
@@ -405,3 +411,76 @@ def pago(request):
 
     else:
         return JsonResponse({"status": "error", "message": "Método no permitido"}, status=405)
+    
+from django.core.files.storage import default_storage
+from django.core.files.base import ContentFile
+import os
+
+from django.core.files.storage import default_storage
+from django.core.files.base import ContentFile
+from django.conf import settings
+import os
+
+def pago_transferencia(request):
+    if request.method == 'POST':
+        try:
+            usuario = request.session.get('usuario')
+
+            # Obtener datos del carrito y usuario
+            productos_en_carrito = request.session.get("carrito_productos", [])
+            total_general = request.session.get("carrito_total", 0)
+            if not usuario or "rut" not in usuario:
+                return JsonResponse({"status": "error", "message": "Usuario no válido en sesión"}, status=400)
+
+            rut_user = usuario["rut"]
+
+            # Procesar imagen del comprobante
+            imagen = request.FILES.get("comprobante")
+            url_comprobante = None
+            if imagen:
+                nombre_archivo = f"{rut_user}_{timezone.now().strftime('%Y%m%d%H%M%S')}.png"
+                ruta_relativa = os.path.join("imagenes_comprobante", nombre_archivo)
+                default_storage.save(ruta_relativa, ContentFile(imagen.read()))
+                url_comprobante = ruta_relativa  # Esto es lo que se envía a la API
+
+            data = {
+                "fecha_pedido": timezone.now().date().isoformat(),
+                "cantidad_pedido": sum(item['cantidad'] for item in productos_en_carrito),
+                "subtotal_pedido": total_general,
+                "rut_user": rut_user,
+                "id_estado_pedido": 2,  # Por pagar
+                "id_productos": [
+                    {
+                        "id_producto": item['id'],
+                        "cantidad_producto": item['cantidad']
+                    } for item in productos_en_carrito
+                ],
+                "pago": {
+                    "fecha_pago": timezone.now().date().isoformat(),
+                    "monto_pagar": total_general,
+                    "url_comprobante": url_comprobante,
+                    "id_medio_pago": 2,  # Transferencia
+                    "id_estado_pago": 2  # Por aprobar
+                }
+            }
+
+            # URL de tu API externa para crear pedido
+            url_api_pedido = "http://localhost:8001/pedidos/"
+            response = requests.post(url_api_pedido, json=data)
+
+            if response.status_code in [200, 201]:
+                request.session["carrito_productos"] = []
+                request.session["carrito_total"] = 0
+                return redirect("thankyou")
+            else:
+                return JsonResponse({
+                    "status": "error",
+                    "message": f"Error en API externa: {response.status_code} {response.text}"
+                })
+
+        except Exception as e:
+            print("Error al procesar pago por transferencia:", e)
+            return JsonResponse({"status": "error", "message": str(e)})
+
+    return render(request, "core/checkout.html")
+

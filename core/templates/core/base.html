@@ -51,7 +51,7 @@
               
                     {% if request.session.usuario %}
                     <li class="nav-item d-flex align-items-center gap-3">
-                        <h5 class="mb-0 fs-6">Bienvenido(a), {{ usuario.nombre }}, {{ usuario.rut }}</h5>
+                        <h5 class="mb-0 fs-6">Bienvenido(a), {{ usuario.nombre }}</h5>
                         <a class="nav-link" href="{% url 'logout' %}">Sign out</a>
                     </li>
                     {% else %}

@@ -151,7 +151,7 @@
                       <li><strong>Email:</strong> contacto@ferremas.cl</li>
                     </ul>
 
-                    <form method="POST" action="#" enctype="multipart/form-data">
+                    <form method="POST" action="{% url 'pago_transferencia' %}" enctype="multipart/form-data">
                       {% csrf_token %}
                       <div class="form-group">
                         <label for="comprobante">Sube tu comprobante de transferencia:</label>
