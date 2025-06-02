@@ -237,10 +237,6 @@ def agregar_al_carrito(request):
         carrito[id_producto] = carrito.get(id_producto, 0) + 1
         request.session['carrito'] = carrito
         request.session.modified = True  # Forzar actualización en sesión
-
-        print("Producto agregado:", id_producto)
-        print("Carrito actual:", carrito)
-
         messages.success(request, "Producto agregado al carrito.")
     return redirect('shop')
 
@@ -310,7 +306,7 @@ def actualizar_carrito(request):
 def home_vendedor(request):
     response = requests.get('http://localhost:8001/producto_pedido')
     producto_pedido = response.json()
-    producto_pedidos = [u for u in producto_pedido if u.get("descripcion") != "Por pagar"]
+    producto_pedidos = [u for u in producto_pedido if u.get("estado_pedido") == "Pagado" or u.get("estado_pedido") == "Aprobado" or u.get("estado_pedido") == "Rechazado" or u.get("estado_pedido") == "Preparado" or u.get("estado_pedido") == "Entregado"]
 
     paginator = Paginator(producto_pedido, 10)
     page_number = request.GET.get('page')
@@ -324,6 +320,7 @@ def home_vendedor(request):
 
 def update_pedido(request, id_pedido):
     try:
+        # Obtener los datos del pedido desde la API
         get_response = requests.get(f"http://localhost:8001/producto_pedido/{id_pedido}")
         if get_response.status_code != 200:
             messages.error(request, "Pedido no encontrado.")
@@ -331,61 +328,125 @@ def update_pedido(request, id_pedido):
 
         pedido = get_response.json()
 
-        # Extraer producto (el primero de la lista)
-        producto = pedido["productos"][0] if pedido.get("productos") else {}
-
-        # Mezclar los datos para el template
-        datos_pedido = {
-            "id_pedido": pedido["id_pedido"],
-            "nombre_producto": producto.get("nombre_producto", ""),
-            "marca_descripcion": producto.get("marca_descripcion", ""),
-            "precio_producto": producto.get("precio_producto", ""),
-            "tipo_producto": producto.get("tipo_producto", ""),
-            "cantidad_producto": producto.get("cantidad_producto", ""),
-            "nombre_user": pedido.get("nombre_user", ""),
-            "apellido": pedido.get("apellido", ""),
-            "estado_pedido": pedido.get("estado_pedido", ""),
-        }
-
+        # Extraer datos del primer producto
+        if pedido["productos"]:
+            producto = pedido["productos"][0]
+            pedido["nombre_producto"] = producto.get("nombre_producto")
+            pedido["marca_descripcion"] = producto.get("marca_descripcion")
+            pedido["precio_producto"] = producto.get("precio_producto")
+            pedido["tipo_producto"] = producto.get("tipo_producto")
+            pedido["cantidad_producto"] = producto.get("cantidad_producto")
+            pedido["estado_pedido"] = producto.get("estado_pedido")
+            pedido["nombre_user"] = producto.get("nombre_user")
+            pedido["apellido"] = producto.get("primer_apellido")
+        else:
+            messages.error(request, "No se encontraron productos en el pedido.")
+            return redirect("home_vendedor")
     except requests.exceptions.RequestException:
         messages.error(request, "Error al conectar con el servidor.")
         return redirect("home_vendedor")
 
     if request.method == 'POST':
         data = {}
-        id_estado_pedido = request.POST.get("id_estado_pedido")
+        id_estado_pedido = request.POST.get("estado_pedido")
         if id_estado_pedido:
             data["id_estado_pedido"] = int(id_estado_pedido)
 
-        data["nombre_producto"] = request.POST.get("nombre_producto")
-        data["marca_descripcion"] = request.POST.get("marca_descripcion")
-        data["precio_producto"] = request.POST.get("precio_producto")
-        data["tipo_producto"] = request.POST.get("tipo_producto")
-        data["cantidad_producto"] = request.POST.get("cantidad_producto")
-        data["nombre_user"] = request.POST.get("nombre_user")
-        data["apellido"] = request.POST.get("apellido")
-
+        # Agregar los datos requeridos por el endpoint
+        data["nombre_producto"] = pedido.get("nombre_producto")
+        data["marca_descripcion"] = pedido.get("marca_descripcion")
+        data["precio_producto"] = pedido.get("precio_producto")
+        data["tipo_producto"] = pedido.get("tipo_producto")
+        data["cantidad_producto"] = pedido.get("cantidad_producto")
+        data["nombre_user"] = pedido.get("nombre_user")
+        data["apellido"] = pedido.get("apellido")
         try:
             response = requests.patch(
-                f"http://localhost:8001/producto_pedido/{id_pedido}",
-                json=data
+                f"http://localhost:8001/pedidos/{id_pedido}",
+                json={"id_estado_pedido": int(id_estado_pedido)}
             )
             if response.status_code == 200:
-                messages.success(request, "Pedido actualizado correctamente.")
-                requests.patch(f"http://localhost:8001/pedidos/{id_pedido}", json={"id_estado_pedido": id_estado_pedido})
+                messages.success(request, "Estado del pedido actualizado correctamente.")
                 return redirect("home_vendedor")
             else:
-                messages.error(request, f"Error al actualizar: {response.json().get('detail', 'Error desconocido')}")
+                messages.error(request, "Error al actualizar el pedido.")
         except requests.exceptions.RequestException:
-            messages.error(request, "No se pudo conectar con el servidor.")
+            messages.error(request, "Error al conectar con el servidor.")
 
-    return render(request, "core/vendedor/update_pedido.html", {"pedido": datos_pedido})
-
+    return render(request, "core/vendedor/update_pedido.html", {"pedido": pedido})
 #VISTAS Bodeguero
 @solo_bodeguero
 def home_bodeguero(request):
-    return render(request, "core/bodeguero/home_bodeguero.html")
+    response = requests.get('http://localhost:8001/producto_pedido')
+    producto_pedido = response.json()
+    producto_pedidos = [u for u in producto_pedido if u.get("estado_pedido") == "Aprobado" or u.get("estado_pedido") == "En preparacion" or u.get("estado_pedido") == "Preparado"]
 
+    paginator = Paginator(producto_pedido, 10)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    aux = {
+        'lista' : producto_pedidos,
+        'page_obj' : page_obj
+    }
+    return render(request, "core/bodeguero/home_bodeguero.html", aux)
+
+def update_pedido_bodeguero(request, id_pedido):
+    try:
+        # Obtener los datos del pedido desde la API
+        get_response = requests.get(f"http://localhost:8001/producto_pedido/{id_pedido}")
+        if get_response.status_code != 200:
+            messages.error(request, "Pedido no encontrado.")
+            return redirect("home_bodeguero")
+
+        pedido = get_response.json()
+
+        # Extraer datos del primer producto
+        if pedido["productos"]:
+            producto = pedido["productos"][0]
+            pedido["nombre_producto"] = producto.get("nombre_producto")
+            pedido["marca_descripcion"] = producto.get("marca_descripcion")
+            pedido["precio_producto"] = producto.get("precio_producto")
+            pedido["tipo_producto"] = producto.get("tipo_producto")
+            pedido["cantidad_producto"] = producto.get("cantidad_producto")
+            pedido["estado_pedido"] = producto.get("estado_pedido")
+            pedido["nombre_user"] = producto.get("nombre_user")
+            pedido["apellido"] = producto.get("primer_apellido")
+        else:
+            messages.error(request, "No se encontraron productos en el pedido.")
+            return redirect("home_bodeguero")
+    except requests.exceptions.RequestException:
+        messages.error(request, "Error al conectar con el servidor.")
+        return redirect("home_bodeguero")
+
+    if request.method == 'POST':
+        data = {}
+        id_estado_pedido = request.POST.get("estado_pedido")
+        if id_estado_pedido:
+            data["id_estado_pedido"] = int(id_estado_pedido)
+
+        # Agregar los datos requeridos por el endpoint
+        data["nombre_producto"] = pedido.get("nombre_producto")
+        data["marca_descripcion"] = pedido.get("marca_descripcion")
+        data["precio_producto"] = pedido.get("precio_producto")
+        data["tipo_producto"] = pedido.get("tipo_producto")
+        data["cantidad_producto"] = pedido.get("cantidad_producto")
+        data["nombre_user"] = pedido.get("nombre_user")
+        data["apellido"] = pedido.get("apellido")
+        try:
+            response = requests.patch(
+                f"http://localhost:8001/pedidos/{id_pedido}",
+                json={"id_estado_pedido": int(id_estado_pedido)}
+            )
+            if response.status_code == 200:
+                messages.success(request, "Estado del pedido actualizado correctamente.")
+                return redirect("home_bodeguero")
+            else:
+                messages.error(request, "Error al actualizar el pedido.")
+        except requests.exceptions.RequestException:
+            messages.error(request, "Error al conectar con el servidor.")
+
+    return render(request, "core/bodeguero/update_pedido_bodeguero.html", {"pedido": pedido})
 #VISTAS Contador
 @solo_contador
 def home_contador(request):
@@ -501,7 +562,7 @@ def pago(request):
                 "cantidad_pedido": sum(item['cantidad'] for item in productos_en_carrito),
                 "subtotal_pedido": total_general,
                 "rut_user": rut_user,
-                "url_imagen_comprobante":"",
+                
                 "id_estado_pedido": 2,  # Pagado
                 "id_productos": [
                     {
@@ -512,6 +573,7 @@ def pago(request):
                 "pago": {
                     "fecha_pago": timezone.now().date().isoformat(),
                     "monto_pagar": total_general,
+                    "url_comprobante":"",
                     "id_medio_pago": 1,  # PayPal
                     "id_estado_pago": 1  # aprobado
                 }

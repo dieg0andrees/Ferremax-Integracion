@@ -1,0 +1,113 @@
+{% extends 'core/base.html' %}
+{% block title %}Actualizar Pedidos{% endblock %}
+{% block content %}
+
+<style>
+  .form-container {
+    background-color: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    max-width: 600px;
+    margin: 40px auto;
+  }
+
+  .form-container h2 {
+    margin-bottom: 1.5rem;
+    font-weight: bold;
+    text-align: center;
+    font-family: 'Ubuntu', sans-serif;
+    color: black;
+  }
+
+  label {
+    color: black;
+    font-family: 'Ubuntu', sans-serif;
+    font-weight: 500;
+  }
+
+  .btn-custom {
+    background-color: #0d6efd;
+    color: white;
+    transition: 0.3s;
+  }
+
+  .btn-custom:hover {
+    background-color: #0b5ed7;
+  }
+
+  .volver-link {
+    display: block;
+    margin-top: 1rem;
+    text-align: center;
+  }
+</style>
+
+<div class="form-container">
+  <h2>Actualizar Pago</h2>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+      {% if messages %}
+      {% for aux in messages %}
+      <script>
+          const Toast = Swal.mixin({
+              toast: true,
+              position: "top-end",
+              showConfirmButton: false,
+              timer: 5000,
+              timerProgressBar: true,
+              didOpen: (toast) => {
+                  toast.onmouseenter = Swal.stopTimer;
+                  toast.onmouseleave = Swal.resumeTimer;
+              }
+          });
+          Toast.fire({
+              icon: "info",
+              title: "{{ aux|escapejs }}"
+          });
+      </script>
+      {% endfor %}
+      {% endif %}
+  <form method="post">
+    {% csrf_token %}
+    <div class="mb-3">
+      <label for="id_pedido">Id del pedido</label>
+      <input type="text" name="id_pedido" class="form-control" required value="{{ pedido.id_pedido }}" readonly>
+    </div>
+
+    <div class="mb-3">
+      <label for="nombre_producto">Nombre de producto</label>
+      <input type="text" name="nombre_producto" class="form-control" required value="{{ pedido.nombre_producto }}" readonly>
+    </div>
+
+    <div class="mb-3">
+      <label for="marca_descripcion">Marca  </label>
+      <input type="text" name="marca_descripcion" class="form-control" required value="{{ pedido.marca_descripcion }}" readonly>
+    </div>
+    <div class="mb-3">
+      <label for="precio_producto">Precio producto</label>
+      <input type="text" name="precio_producto" class="form-control" required value="{{ pedido.precio_producto }}" readonly>
+    </div>
+    <div class="mb-3">
+      <label for="cantidad_producto">Cantidad producto</label>
+      <input type="text" name="cantidad_producto" class="form-control" required value="{{ pedido.cantidad_producto }}" readonly>
+    </div>
+    <div class="mb-3">
+      <label for="estado_pedido">Estado del pedido</label>
+      <select name="estado_pedido" class="form-control" required>
+        <option value="2" {% if pedido.estado_pedido == "Aprobado" %}selected{% endif %}>Aprobado</option>
+        <option value="7" {% if pedido.estado_pedido == "En preparacion" %}selected{% endif %}>En preparación</option>
+        <option value="6" {% if pedido.estado_pedido == "Preparado" %}selected{% endif %}>Preparado</option>
+      </select>
+    </div>
+    <div class="mb-3">
+      <label for="nombre_user">Nombre Cliente</label>
+      <input type="text" name="nombre_user" class="form-control" required value="{{ pedido.nombre_user }} {{ pedido.apellido }}" readonly>
+    </div>
+    <button type="submit" class="btn btn-custom w-100 mt-3">Guardar Cambios</button>
+    <a href="{% url 'home_bodeguero' %}" class="volver-link">← Cancelar</a>
+  </form>
+</div>
+
+{% endblock %}

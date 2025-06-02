@@ -21,11 +21,36 @@
     <link rel="stylesheet" href="{% static 'core/css/aos.css' %}">
 
     <link rel="stylesheet" href="{% static 'core/css/style.css' %}">
+
+    <!-- Sweet Alert-->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     {% block extra_head %}{% endblock %}
 
   </head>
 <body>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
+    {% if messages %}
+    {% for aux in messages %}
+    <script>
+        const Toast = Swal.mixin({
+            toast: true,
+            position: "bottom-end",
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+            didOpen: (toast) => {
+                toast.onmouseenter = Swal.stopTimer;
+                toast.onmouseleave = Swal.resumeTimer;
+            }
+        });
+        Toast.fire({
+            icon: "info",
+            title: "{{ aux|escapejs }}"
+        });
+    </script>
+    {% endfor %}
+    {% endif %}
     <!-- NAVBAR -->
     <header class="site-navbar" role="banner">
         <div class="site-navbar-top">

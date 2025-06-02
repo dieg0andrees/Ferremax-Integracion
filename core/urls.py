@@ -24,6 +24,7 @@ urlpatterns = [
 
     #URLs BODEGUERO
     path('home_bodeguero/', home_bodeguero, name="home_bodeguero"),
+    path('update_pedido_bodeguero/<str:id_pedido>/', update_pedido_bodeguero, name='update_pedido_bodeguero'),
 
     #URLs CONTADOR
     path('home_contador/', home_contador, name="home_contador"),
